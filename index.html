@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consultoría Digital NovaMarket</title>
+  <link rel="icon" href="https://public-frontend-cos.metadl.com/mgx/img/favicon.png" type="image/png">
+  <link rel="stylesheet" href="estilos_inicio.css">
+
+  <!-- ====== Ajustes locales que corrigen el disco de tarjetas, contraste y modales ====== -->
+  <style>
+    /* --- Fix globales importantes --- */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      /* Quitar overflow:hidden que impedía ver modales y desplazamiento */
+      overflow-y: auto;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+  body {
+    background: url('img/inicio_fondo.jpeg') center/cover no-repeat fixed;
+  }
+    /* Si usas un fondo de bienvenida: */
+    .bienvenida {
+      text-align: center;
+      padding: 120px 10% 60px;
+      background: rgba(0,0,0,0.35) url('assets/inicio_fondo.jpeg') center/cover no-repeat;
+      border-radius: 14px;
+      color: #fff;
+      margin: 80px 10px 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+    .bienvenida h2 { font-size: 1.8rem; margin-bottom: 8px; }
+    .bienvenida p { color: #f3f6f9; opacity: .95; }
+
+    /* ====== SERVICIOS: restaurar grid y estilo de tarjetas ====== */
+    .servicios {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      padding: 40px 6%;
+      background-color: #fff;
+    }
+
+    .tarjeta {
+      border: 1px solid #e6eaf0;
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      transition: transform .28s ease, box-shadow .28s ease;
+      background-color: #ffffff;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:170px;
+    }
+    .tarjeta:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 36px rgba(10,20,60,0.10);
+    }
+
+    .tarjeta h3 {
+      font-size: 1.12rem;
+      color: #032a4f;
+      margin-bottom: 8px;
+      line-height:1.2;
+    }
+    .tarjeta p {
+      color: #4b5563;
+      margin-bottom: 14px;
+      flex:1;
+    }
+
+    /* botón que abre modal: usamos clase btn-solicitar (antes había inconsistencias) */
+    .btn-solicitar,
+    .tarjeta button {
+      background-color: #0fa884;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight:600;
+      align-self:flex-start;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .btn-solicitar:hover,
+    .tarjeta button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(15, 168, 132, 0.18);
+    }
+
+    /* ====== MODAL: contraste y scroll interno ====== */
+    .modal-oscuro {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      overflow-y: auto;
+      padding: 30px 16px;
+    }
+
+    .modal-contenido {
+      background: #fff;
+      color: #111827;
+      margin: 3% auto;
+      padding: 22px;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 720px;
+      box-shadow: 0 25px 60px rgba(2,6,23,0.18);
+      position: relative;
+    }
+
+    .modal-contenido img {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+
+    .cerrar-modal {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #374151;
+    }
+
+    /* FORMULARIO: inputs legibles y accesibles */
+    #modalFormulario .modal-contenido {
+      max-width: 640px;
+    }
+    form label {
+      display:block;
+      margin-top:10px;
+      color:#0b3d91;
+      font-weight:600;
+      font-size:0.95rem;
+    }
+    form input, form textarea, form select {
+      width:100%;
+      padding:10px 12px;
+      margin-top:6px;
+      border:1px solid #cbd5e1;
+      border-radius:8px;
+      background:#fff;
+      color:#111827;
+      font-size:0.95rem;
+      outline:none;
+    }
+    form input:focus, form textarea:focus {
+      box-shadow: 0 6px 18px rgba(14,165,233,0.12);
+      border-color:#60a5fa;
+    }
+    .boton-azul {
+      margin-top:14px;
+      padding:10px 18px;
+      border-radius:10px;
+      border:none;
+      background: linear-gradient(90deg,#0b74ff,#00d4ff);
+      color:#fff;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    /* ====== Galería e íconos redes: ajustes responsivos (no tocarás el contacto) ====== */
+    .galeria-servicios { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; padding:30px 6%; }
+    .galeria-item { width:calc(33.333% - 12px); min-width:220px; background:hsla(180, 10%, 92%, 0.63); border-radius:10px; padding:12px; text-align:center; box-shadow:0 6px 18px rgba(2,6,23,0.04); }
+    .galeria-item img { width:100%; height:140px; object-fit:cover; border-radius:8px; margin-bottom:10px; }
+
+    .redes-animadas { display:flex; gap:14px; justify-content:center; padding:22px 0 40px; }
+    .redes-animadas a { width:46px; height:46px; display:inline-flex; align-items:center; justify-content:center; border-radius:8px; background:#fff; box-shadow:0 8px 18px rgba(2,6,23,0.06); transition:transform .2s ease; }
+    .redes-animadas a:hover { transform: translateY(-6px) scale(1.04); box-shadow:0 16px 36px rgba(2,6,23,0.10); }
+
+    @media (max-width: 900px) {
+      .galeria-item { width: calc(50% - 12px); }
+    }
+    @media (max-width: 560px) {
+      .galeria-item { width: 100%; padding:12px; }
+      .bienvenida { padding: 40px 22px; margin: 90px 10px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- ====== ENCABEZADO ====== -->
+  <header>
+    <div class="container-header">
+      <div class="logo">
+        <img src="img/logo_empresa.jpg" alt="Logo Consultoría Digital">
+        <h1>Consultoría Digital NovaMarket</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html" class="activo">Inicio</a></li>
+          <li><a href="nosotros.html">Nosotros</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====== SECCIÓN INICIO ====== -->
+  <section id="inicio" class="bienvenida" aria-label="Bienvenida">
+    <h2>Bienvenido a tu portal de consultoría digital</h2>
+    <p>Transformamos tu negocio con soluciones digitales, diseño moderno y tecnología avanzada.</p>
+  </section>
+
+  <!-- ====== SERVICIOS ====== -->
+  <section id="servicios" class="servicios" aria-label="Servicios">
+    <!-- Tarjetas originales (estructura restaurada y responsive) -->
+    <div class="tarjeta">
+    <img src="img/web_service.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Creación y diseño de páginas web</h3>
+        <p>Desarrollamos sitios web modernos, seguros y personalizados para tu empresa.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_web">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+      <img src="img/fondo_apps.webp" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Desarrollo de aplicaciones móviles</h3>
+        <p>Creamos apps intuitivas y eficientes para Android e iOS, a medida de tus necesidades.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_apps">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+      <img src="img/fondo_seguridad.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Servicios de seguridad y ubicación empresarial</h3>
+        <p>Protege tus activos y mejora la gestión logística con nuestros sistemas integrados.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_seguridad">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+      <img src="img/fondo_rrhh.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Recursos Humanos digitales para PYMES</h3>
+        <p>Optimiza la gestión de tu equipo con herramientas digitales adaptadas a tu negocio.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_rrhh">Ver más / Solicitar</button>
+    </div>
+
+    <!-- Nuevas tarjetas sugeridas -->
+    <div class="tarjeta">
+      <img src="img/auditoria.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Auditoría Digital</h3>
+        <p>Evaluamos tu presencia online, seguridad y rendimiento para proponer mejoras concretas.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_auditoria">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+      <img src="img/gestion_de_redes.webp" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Gestión de Redes Sociales</h3>
+        <p>Planes de contenidos, campañas pagadas y crecimiento orgánico a la medida.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_rrss">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+        <img src="img/tienda_digital.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Tienda Online (eCommerce)</h3>
+        <p>Tiendas integradas, carrito, y pasarelas de pago para vender en línea con seguridad.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_tienda">Ver más / Solicitar</button>
+    </div>
+
+    <div class="tarjeta">
+      <img src="img/diseño_logos_corporativo.jpg" alt="Creación y diseño de páginas web" class="tarjeta-img">
+      <div>
+        <h3>Branding y Diseño Corporativo</h3>
+        <p>Creación de identidad visual, logos y manual de marca para potenciar tu imagen.</p>
+      </div>
+      <button class="btn-solicitar" data-service="fondo_branding">Ver más / Solicitar</button>
+    </div>
+  </section>
+
+  <!-- ====== MODALES (detalle + formulario reutilizando tu estilo) ====== -->
+  <!-- Modal base para Web -->
+  <div id="fondo_web" class="modal-oscuro" role="dialog" aria-hidden="true">
+    <div class="modal-contenido" role="document">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_web')" aria-label="Cerrar">&times;</button>
+      <img src="img/web_server_2.jpg" alt="Diseño Web Profesional">
+      <h2>Creación y Diseño de Páginas Web</h2>
+      <p>Ofrecemos sitios web desarrollados con las tecnologías más modernas como <strong>HTML5, CSS3, JavaScript, React y PHP</strong>. Nuestras páginas están optimizadas para SEO, adaptadas a todos los dispositivos y diseñadas para transmitir confianza y profesionalismo. Además, trabajamos con estructuras seguras, tiempos de carga optimizados y diseños atractivos que conectan con tus clientes. Cada proyecto se construye a medida, integrando buenas prácticas, accesibilidad web y herramientas de análisis para mejorar el rendimiento de tu negocio. Nuestro objetivo es que tengas una plataforma sólida, moderna y preparada para crecer junto a tu empresa.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Creación y Diseño de Páginas Web')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <!-- Modal Apps -->
+  <div id="fondo_apps" class="modal-oscuro" role="dialog" aria-hidden="true">
+    <div class="modal-contenido" role="document">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_apps')" aria-label="Cerrar">&times;</button>
+      <img src="img/desarrolllo_app_2.jpg" alt="Desarrollo de Aplicaciones">
+      <h2>Desarrollo de Aplicaciones Móviles</h2>
+      <p>Diseñamos y desarrollamos aplicaciones móviles nativas y multiplataforma usando <strong>Flutter, Kotlin, Swift y React Native</strong>. Creamos soluciones rápidas, seguras y altamente escalables que funcionan perfectamente en Android y iOS. Cada aplicación se construye con interfaces modernas, alto rendimiento y una experiencia de usuario intuitiva. Además, integramos notificaciones push, autenticación, bases de datos en tiempo real y funcionalidades avanzadas según las necesidades de tu negocio. Nuestro enfoque combina diseño, usabilidad y tecnología para entregar apps confiables, atractivas y preparadas para crecer a largo plazo.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Desarrollo de Aplicaciones Móviles')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <!-- Modal Seguridad -->
+  <div id="fondo_seguridad" class="modal-oscuro" role="dialog" aria-hidden="true">
+    <div class="modal-contenido" role="document">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_seguridad')" aria-label="Cerrar">&times;</button>
+      <img src="img/seguridad_2.jpg" alt="Seguridad Empresarial">
+      <h2>Seguridad y Ubicación Empresarial</h2>
+      <p>Implementamos sistemas integrales de <strong>monitoreo, control de acceso, rastreo GPS y ciberseguridad</strong>. Trabajamos con tecnologías confiables y de alto rendimiento para proteger tus activos, automatizar procesos y mejorar la seguridad de tu empresa. Ofrecemos soluciones adaptadas a distintos entornos, con paneles de control avanzados, alertas en tiempo real y conectividad remota. Además, integramos protocolos de seguridad, cifrado de datos y herramientas de gestión inteligente para garantizar operaciones estables, seguras y totalmente supervisadas. Nuestro enfoque asegura que tu organización cuente con sistemas robustos, modernos y preparados para futuros desafíos.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Seguridad y Ubicación Empresarial')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <!-- Modal RRHH -->
+  <div id="fondo_rrhh" class="modal-oscuro" role="dialog" aria-hidden="true">
+    <div class="modal-contenido" role="document">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_rrhh')" aria-label="Cerrar">&times;</button>
+      <img src="img/rrhh_server_2.webp" alt="Recursos Humanos Digitales">
+      <h2>Recursos Humanos Digitales</h2>
+      <p>Transformamos la gestión del talento mediante sistemas digitales de control de asistencia, evaluación y selección automatizada basados en <strong>Python y SQL</strong>. Desarrollamos plataformas inteligentes que permiten optimizar procesos internos, reducir tiempos administrativos y mejorar la toma de decisiones mediante informes claros y análisis de datos. Nuestras soluciones incluyen seguimiento en tiempo real, paneles de desempeño, automatización de flujos de trabajo y almacenamiento seguro de información. Con esto, tu organización obtiene herramientas modernas, precisas y escalables para una gestión del talento más eficiente y orientada a resultados.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Recursos Humanos Digitales')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <!-- Modales nuevos -->
+  <div id="fondo_auditoria" class="modal-oscuro">
+    <div class="modal-contenido">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_auditoria')" aria-label="Cerrar">&times;</button>
+      <img src="img/auditoria_2.jpg" alt="Auditoría Digital">
+      <h2>Auditoría Digital</h2>
+      <p>Revisamos tu ecosistema digital evaluando rendimiento, SEO, seguridad y experiencia de usuario. Analizamos cada componente de tu sitio o plataforma para identificar cuellos de botella, fallas técnicas y oportunidades de mejora. Al finalizar, entregamos un informe detallado con recomendaciones claras, priorizadas y fáciles de implementar, junto con sugerencias estratégicas para optimizar la presencia online de tu negocio. Nuestro objetivo es ayudarte a mejorar la eficiencia, visibilidad y confiabilidad de tus sistemas digitales, asegurando un funcionamiento sólido y una experiencia superior para tus usuarios.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Auditoría Digital')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <div id="fondo_rrss" class="modal-oscuro">
+    <div class="modal-contenido">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_rrss')" aria-label="Cerrar">&times;</button>
+      <img src="img/gestion_de_redes_2.jpg" alt="Gestión Redes Sociales">
+      <h2>Gestión de Redes Sociales</h2>
+      <p>Planificación, creación de contenido y campañas para potenciar tu alcance y conversión en redes sociales. Desarrollamos estrategias personalizadas basadas en objetivos claros, análisis de audiencia y tendencias actuales. Creamos contenido atractivo, coherente con tu marca y optimizado para cada plataforma, acompañado de campañas segmentadas para maximizar visibilidad y resultados. Además, realizamos monitoreo continuo, ajustes en tiempo real y reportes de desempeño para asegurar un crecimiento sostenible, mayor interacción y una comunidad digital activa y comprometida..</p>
+      <button class="boton-azul" onclick="abrirFormulario('Gestión de Redes Sociales')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <div id="fondo_tienda" class="modal-oscuro">
+    <div class="modal-contenido">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_tienda')" aria-label="Cerrar">&times;</button>
+      <img src="img/carro_de_compra.jpg" alt="Tienda Online">
+      <h2>Tienda Online (eCommerce)</h2>
+      <p>Montamos tiendas con carrito de compras, integración de pagos y soluciones de logística para que puedas vender de forma segura y escalable. Implementamos plataformas rápidas, confiables y optimizadas para conversión, permitiendo administrar productos, inventario y pedidos desde un panel intuitivo. Integramos medios de pago nacionales e internacionales, sistemas de envío automatizados y herramientas de seguimiento en tiempo real. Además, configuramos medidas de seguridad, SEO para e-commerce y análisis de ventas para ayudarte a tomar decisiones informadas y hacer crecer tu negocio de manera sostenible.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Tienda Online (eCommerce)')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <div id="fondo_branding" class="modal-oscuro">
+    <div class="modal-contenido">
+      <button class="cerrar-modal" onclick="cerrarModal('fondo_branding')" aria-label="Cerrar">&times;</button>
+      <img src="img/diseño_logos_corporativo_2.jpg" alt="Branding">
+      <h2>Branding y Diseño Corporativo</h2>
+      <p>Identidad visual, manual de marca y piezas gráficas coherentes para escalar tu marca con profesionalismo. Diseñamos una imagen sólida y memorable que refleje la esencia de tu negocio, asegurando consistencia en todos tus canales digitales y materiales impresos. Creamos logotipos, paletas de color, tipografías, lineamientos de uso y recursos visuales listos para aplicar en redes sociales, presentaciones, campañas y sitio web. Nuestro objetivo es construir una identidad que transmita confianza, diferencia a tu marca en el mercado y fortalezca su presencia a largo plazo.</p>
+      <button class="boton-azul" onclick="abrirFormulario('Branding y Diseño Corporativo')">Solicitar Servicio</button>
+    </div>
+  </div>
+
+  <!-- ====== FORMULARIO (reutilizado para todas las tarjetas) ====== -->
+  <div id="modalFormulario" class="modal-oscuro" role="dialog" aria-hidden="true">
+    <div class="modal-contenido" role="document">
+      <button class="cerrar-modal" onclick="cerrarModal('modalFormulario')" aria-label="Cerrar">&times;</button>
+      <h2 id="tituloFormulario">Solicitud de Servicio</h2>
+      <form id="formSolicitud">
+        <label for="inputNombre">Nombre:</label>
+        <input id="inputNombre" type="text" required>
+
+        <label for="inputRUT">RUT:</label>
+        <input id="inputRUT" type="text" required
+        pattern="^[0-9]{1,8}-[0-9Kk]{1}$"
+        title="Formato válido: 12345678-9 o 12345678-K">
+
+        <label for="inputEmail">Correo:</label>
+        <input id="inputEmail" type="email" required>
+
+        <label for="inputTelefono">Teléfono:</label>
+        <input id="inputTelefono" type="tel" required
+        pattern="^[0-9]{9}$"
+        title="Debe ingresar un número de 9 dígitos">
+
+        <label for="inputDescripcion">Descripción del servicio:</label>
+        <textarea id="inputDescripcion" rows="4" required></textarea>
+
+        <label for="inputFecha">Fecha y hora (Lunes a Viernes, 10:00 a 17:30):</label>
+        <input id="inputFecha" type="datetime-local" required>
+
+        <input type="hidden" id="inputServicio" value="">
+
+        <button type="submit" class="boton-azul">Enviar Solicitud</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====== GALERÍA EXPLICATIVA (3 imágenes indicadas) ====== -->
+  <section class="galeria-servicios" aria-label="Galería de servicios destacados">
+    <div class="galeria-item">
+      <img src="img/seguridad_3.jpg" alt="Seguridad empresarial">
+      <h4>Seguridad Empresarial</h4>
+      <p>Monitoreo 24/7, rastreo GPS y soluciones de ciberseguridad para proteger tus activos y datos.</p>
+    </div>
+
+    <div class="galeria-item">
+      <img src="img/aap_juego.jpg" alt="Apps y juegos móviles">
+      <h4>Apps & Juegos</h4>
+      <p>Desarrollo nativo y multiplataforma para experiencias móviles atractivas y monetizeables.</p>
+    </div>
+
+    <div class="galeria-item">
+      <img src="img/web_server_3.jpg" alt="Páginas web y tiendas online">
+      <h4>Páginas Web & eCommerce</h4>
+      <p>Diseño responsive, SEO y conversión: sitios pensados para vender y generar confianza.</p>
+    </div>
+  </section>
+
+  <!-- ====== REDES SOCIALES ANIMADAS (logos con animación al hover) ====== -->
+  <div class="redes-animadas" aria-hidden="false">
+    <a href="#" title="Facebook" aria-label="Facebook">
+      <!-- SVG Facebook -->
+      <svg viewBox="0 0 24 24" fill="#1877F2" xmlns="http://www.w3.org/2000/svg"><path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8.9v-2.9h1.6V9.1c0-1.6 1-2.5 2.4-2.5.7 0 1.4.1 1.4.1v1.6h-.8c-.8 0-1 .5-1 1v1.2h1.7l-.3 2.9h-1.4V22A10 10 0 0 0 22 12z"/></svg>
+    </a>
+    <a href="#" title="Instagram" aria-label="Instagram">
+      <!-- SVG Instagram -->
+      <svg viewBox="0 0 24 24" fill="#E4405F" xmlns="http://www.w3.org/2000/svg"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm5 6.5A4.5 4.5 0 1 0 16.5 13 4.5 4.5 0 0 0 12 8.5zm5.2-3.6a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1z"/></svg>
+    </a>
+    <a href="#" title="LinkedIn" aria-label="LinkedIn">
+      <!-- SVG LinkedIn -->
+      <svg viewBox="0 0 24 24" fill="#0A66C2" xmlns="http://www.w3.org/2000/svg"><path d="M4.98 3.5A2.5 2.5 0 1 0 5 8.5 2.5 2.5 0 0 0 4.98 3.5zM3 9h4v12H3zM9 9h3.8v1.6h.1c.5-.9 1.6-1.9 3.3-1.9 3.5 0 4.1 2.3 4.1 5.2V21H16v-5.2c0-1.2 0-2.7-1.7-2.7-1.7 0-1.9 1.3-1.9 2.6V21H9z"/></svg>
+    </a>
+    <a href="#" title="X" aria-label="X">
+      <!-- SVG X / Twitter style -->
+      <svg viewBox="0 0 24 24" fill="#1DA1F2" xmlns="http://www.w3.org/2000/svg"><path d="M22 5.9c-.6.3-1.2.6-1.9.7.7-.4 1.2-1 1.4-1.7-.6.4-1.3.7-2.1.9C18.5 4.9 17.6 4.5 16.6 4.5c-1.8 0-3.2 1.5-3.2 3.3 0 .3 0 .6.1.9-2.7-.1-5.1-1.4-6.7-3.4-.3.6-.5 1.3-.5 2 0 1.5.8 2.8 2 3.6-.5 0-1-.2-1.4-.4v.1c0 1.9 1.3 3.5 3 3.8-.3.1-.6.1-.9.1-.2 0-.4 0-.6-.1.4 1.2 1.5 2 2.9 2-1 .8-2.2 1.3-3.5 1.3H7c1.9 1.2 4.1 1.9 6.4 1.9 7.7 0 11.9-6.4 11.9-11.9v-.5c.8-.6 1.5-1.3 2-2.1-.7.3-1.5.6-2.3.7z"/></svg>
+    </a>
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <footer>
+    <p>© 2025 Consultoría Digital NovaMarket | Todos los derechos reservados</p>
+  </footer>
+
+  <!-- ====== DEPENDENCIAS PARA PDF y CAPTURA ====== -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+    integrity="sha512-BNa5m3VbY3lqZ0q+1qWfJ+q2Q8zXUqXb0r3T2DqZQ6zq4E1Hq0xVg89qv3t9YgZ5f0Kqv8nJkG6g5dZ3vKQ0hg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"
+    integrity="sha512-K6xvY3Qw4nQe3B0m1s2l5g4oY9k2r4V1qg6z9nG5t1d7f3Hq4p2v8w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <!-- ====== SCRIPT PRINCIPAL ====== -->
+  <script>
+    // Número de WhatsApp destino (desde contacto)
+    const WHATSAPP_NUMBER = "+56945059349";
+
+    // Abrir modal genérico de detalle
+    function abrirModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'block';
+        el.setAttribute('aria-hidden','false');
+        // foco accesible al primer focusable
+        const focusable = el.querySelector('button, a, input, textarea, select');
+        if (focusable) focusable.focus();
+      }
+    }
+    function cerrarModal(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = 'none';
+        el.setAttribute('aria-hidden','true');
+      }
+    }
+
+    // Abrir formulario y fijar nombre de servicio
+    function abrirFormulario(servicio = '') {
+      abrirModal('modalFormulario');
+      document.getElementById('tituloFormulario').textContent = 'Solicitud de Servicio - ' + servicio;
+      document.getElementById('inputServicio').value = servicio;
+    }
+
+    // Asociar botones de las tarjetas (usa data-service)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.btn-solicitar').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const svcModal = btn.getAttribute('data-service');
+          const modal = document.getElementById(svcModal);
+          if (modal) {
+            abrirModal(svcModal);
+          } else {
+            abrirFormulario(btn.closest('.tarjeta').querySelector('h3').textContent.trim());
+          }
+        });
+      });
+
+      // Cerrar modales al hacer click fuera
+      window.addEventListener('click', function(e) {
+        document.querySelectorAll('.modal-oscuro').forEach(modal => {
+          if (e.target === modal) modal.style.display = 'none';
+        });
+      });
+
+      // also allow Esc to close modals
+      window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal-oscuro').forEach(modal => modal.style.display = 'none');
+        }
+      });
+    });
+
+    // Genera PDF desde los campos del formulario
+    async function generarPDF(datos) {
+      const cont = document.createElement('div');
+      cont.style.width = '800px';
+      cont.style.padding = '24px';
+      cont.style.fontFamily = "'Poppins', sans-serif";
+      cont.style.background = 'white';
+      cont.style.color = '#111';
+      cont.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <img src="assets/logo_empresa.jpg" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+          <div>
+            <h2 style="margin:0;color:#0b3d91;">Consultoría Digital NovaMarket</h2>
+            <div style="color:#555;">Solicitud de reserva</div>
+          </div>
+        </div>
+        <hr style="border:none;border-top:1px solid #e6e6e6;margin:12px 0;">
+        <div>
+          <p><strong>Servicio:</strong> ${datos.servicio}</p>
+          <p><strong>Nombre:</strong> ${datos.nombre}</p>
+          <p><strong>RUT:</strong> ${datos.rut}</p>
+          <p><strong>Correo:</strong> ${datos.email}</p>
+          <p><strong>Teléfono:</strong> ${datos.telefono}</p>
+          <p><strong>Fecha y hora pedida:</strong> ${datos.fechaHoraTexto}</p>
+          <p><strong>Descripción:</strong><br>${datos.descripcion.replace(/\n/g,'<br>')}</p>
+        </div>
+        <div style="margin-top:18px;color:#777;font-size:12px;">
+          Reserva generada: ${new Date().toLocaleString()}
+        </div>
+      `;
+      cont.style.position = 'fixed';
+      cont.style.left = '-9999px';
+      document.body.appendChild(cont);
+
+      const canvas = await html2canvas(cont, { scale: 2 });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: [canvas.width, canvas.height],
+      });
+      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
+      document.body.removeChild(cont);
+
+      const blob = pdf.output('blob');
+      return blob;
+    }
+
+    function blobToFile(blob, filename) {
+      return new File([blob], filename, { type: blob.type, lastModified: Date.now() });
+    }
+
+    // Intenta compartir archivo con Web Share API. Si no, descarga y abre wa.me con mensaje.
+    async function compartirReservaWhatsApp(datos) {
+      try {
+        const pdfBlob = await generarPDF(datos);
+        const filename = `reserva_${datos.nombre.replace(/\s+/g,'_')}_${Date.now()}.pdf`;
+        const file = blobToFile(pdfBlob, filename);
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Reserva NovaMarket',
+            text: `Reserva: ${datos.nombre} - ${datos.servicio}`
+          });
+          const texto = `Hola, te envié la reserva: *${datos.nombre}* - ${datos.servicio} - ${datos.fechaHoraTexto}. Revisa el archivo adjunto.`;
+          window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`, '_blank');
+          return;
+        }
+      } catch (err) {
+        console.warn('No fue posible compartir con Web Share API o fallo:', err);
+      }
+
+      // Fallback: descargar PDF y abrir WhatsApp Web con mensaje
+      try {
+        const pdfBlobFallback = await generarPDF(datos);
+        const url = URL.createObjectURL(pdfBlobFallback);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reserva_${datos.nombre.replace(/\s+/g,'_')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        const texto = `Hola, soy ${datos.nombre}. Solicito reserva para ${datos.servicio} el ${datos.fechaHoraTexto}. Tel: ${datos.telefono}. Correo: ${datos.email}. Descripción: ${datos.descripcion}`;
+        window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(texto)}`, '_blank');
+
+        alert('Se descargó el PDF. Abriendo WhatsApp Web con mensaje pre-llenado. Adjunta el PDF manualmente en la conversación si lo deseas.');
+      } catch (err) {
+        console.error('Error generando o descargando PDF:', err);
+        alert('Ocurrió un error al generar la reserva. Intenta nuevamente.');
+      }
+    }
+
+    // Validación de horario y submit del formulario
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById("formSolicitud");
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const nombre = document.getElementById('inputNombre').value.trim();
+        const rut = document.getElementById('inputRUT').value.trim();
+        const email = document.getElementById('inputEmail').value.trim();
+        const telefono = document.getElementById('inputTelefono').value.trim();
+        const descripcion = document.getElementById('inputDescripcion').value.trim();
+        const fechaInput = document.getElementById('inputFecha').value;
+        const servicio = document.getElementById('inputServicio').value || 'General';
+
+        if (!fechaInput) {
+          alert('Por favor selecciona fecha y hora.');
+          return;
+        }
+        const fecha = new Date(fechaInput);
+        const dia = fecha.getDay();
+        const hora = fecha.getHours();
+        const minutos = fecha.getMinutes();
+        const dentroDeHorario =
+          dia >= 1 && dia <= 5 &&
+          (hora > 10 || (hora === 10 && minutos >= 0)) &&
+          (hora < 17 || (hora === 17 && minutos <= 30));
+        if (!dentroDeHorario) {
+          alert("⚠️ Solo puedes agendar una cita entre lunes y viernes de 10:00 a 17:30 horas.");
+          return false;
+        }
+
+        const fechaHoraTexto = fecha.toLocaleString();
+
+        const datos = { nombre, rut, email, telefono, descripcion, fechaHoraTexto, servicio };
+
+        if (!confirm(`Confirmar reserva para ${nombre} el ${fechaHoraTexto} (Servicio: ${servicio})?`)) return;
+
+        compartirReservaWhatsApp(datos);
+
+        // reset y cerrar modal
+        this.reset();
+        cerrarModal('modalFormulario');
+      });
+    });
+  </script>
+</body>
+</html>
