@@ -126,12 +126,12 @@ nav a.activo {
 
 .tarjeta h3 {
   font-size: 1.15rem;
-  color: #003366;
+  color: #1a1a1a;
   font-weight: bold;
 }
 
 .tarjeta p {
-  color: #2e2e2e;
+  color: #333333;
   margin-bottom: 16px;
   flex: 1;
 }
